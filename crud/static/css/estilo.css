@@ -1,0 +1,16 @@
+form .lform {
+  display: inline-block;
+  width: 100px;
+}
+select {
+	width: 60%;
+	float: right;
+}
+textarea {
+	width: 60%;
+	float: right;
+
+}
+input{
+	
+}

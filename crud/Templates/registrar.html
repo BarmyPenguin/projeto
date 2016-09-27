@@ -1,0 +1,62 @@
+<!--<!DOCTYPE html>
+<html>
+	<head>
+		<title>Página de Registro</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link href="static/css/bootstrap.min.css" rel="stylesheet">
+	</head>
+	<body>
+	<div class="container">
+	<h1>Registrar-se</h1>
+	<br>
+	<form action="" method="POST">
+		<input type="text" placeholder="Username" name="username" value="{{ request.form.username }}">
+		<input type="password" placeholder="Password" name="password" value=" {{ request.form.password }}">
+		<input class="btn btn-default" type="submit" value="Entrar">
+	</form>
+	{% if error %}
+		<p class="error"><strong>Erro:</strong> {{ error }}</p>
+	{% endif %}
+	</div>
+ 	</body>
+</html> -->
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link href="static/css/bootstrap.min.css" rel="stylesheet">
+		<title>Página de Registro</title>
+	</head>
+	<body>
+		<h1>Página de Registro</h1>
+		<hr>
+		<form action="{{ url_for('registrar')}}" method="POST">
+			<table>
+				<tr>
+					<td>Nome</td>
+					<td><input type="text" name="r_nome"></td>
+				</tr>
+				<tr>
+					<td>Empresa</td>
+					<td><input type="text" name="r_empresa"></td>
+				</tr>
+				<tr>
+					<td>Telefone</td>
+					<td><input type="text" name="r_telefone"></td>
+				</tr>
+				<tr>
+					<td>E-mail</td>
+					<td><input type="text" name="r_email"></td>
+				</tr>
+				<tr>
+					<td>Password</td>
+					<td><input type="password" name="r_password"></td>
+				</tr>
+			</table><br>
+			<input type="submit" value="Registrar-se"><br><br>
+			<input type="submit" value="Voltar"><a href="/index">
+		</form>
+	</body>
+</html>

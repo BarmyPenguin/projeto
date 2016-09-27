@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Página de Login</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link href="static/css/bootstrap.min.css" rel="stylesheet">
+	</head>
+	<body>
+	<div class="container">
+	<h1>Login</h1>
+	<br>
+	<form action="" method="POST">
+		<input type="text" placeholder="Username" name="username" value="{{ request.form.username }}">
+		<input type="password" placeholder="Password" name="password" value=" {{ request.form.password }}">
+		<input class="btn btn-default" type="submit" value="Entrar">
+	</form>
+	{% if error %}
+		<p class="error"><strong>Erro:</strong> {{ error }}</p>
+	{% endif %}
+	</div>
+ 	</body>
+</html>
