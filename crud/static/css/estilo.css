@@ -5,11 +5,12 @@ form .lform {
 select {
 	width: 60%;
 	float: right;
+	
 }
 textarea {
 	width: 60%;
 	float: right;
-
+	
 }
 input{
 	
@@ -21,8 +22,14 @@ input{
 }
 
 .footer{
-background: black;	
-width: 100%;
-height: 20%;
-position: relative;
+	background: black;	
+	width: 100%;
+	height: 20%;
+	position: relative;
+}
+body{
+	font-family: Lucida Calligraphy;
+}
+button{
+	margin-right: 100px;
 }

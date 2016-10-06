@@ -161,44 +161,46 @@ def atualizar(id):
 
 	#return render_template('login.html', error=error)
 
-#@app.route("/login", methods=['GET', 'POST'])
-#def login():
-#	error = None
-#	if request.method == 'POST':
-#
-#		usuario = request.form["username"]
-#		senha  = request.form["password"]
+@app.route("/login", methods=['GET', 'POST'])
+def login():
+	error = None
+	if request.method == 'POST':
 
-#		condicao = "nomeusuario"  + r_nome + "."
+		usuario = request.form["username"]
+		senha  = request.form["password"]
+
+		condicao = "nomeusuario"  + r_nome + "."
 	
-#		for user in session.query(r_nome).\
- #           filter(text(condicao)).\
-  #          order_by(text("id")).all():
-   #         (r_nome.senha)  == senha
+		for user in session.query(r_nome).\
+            filter(text(condicao)).\
+             order_by(text("id")).all():
+             (r_nome.senha)  == senha
 
 
-	#    if senhabd ==  senha:
+	    if senhabd ==  senha:
 
 		#if request.form["username"] != "admin" or request.form["password"] != "admin":
-	#		error = 'Login inválido. Por favor, tente novamente.'
-	#	else:
-	#		session['logged_in'] = True
-	#		flash('Você está logado!')
-	#		return redirect(url_for('index'))
+			error = 'Login inválido. Por favor, tente novamente.'
+		else:
+			session['logged_in'] = True
+			flash('Você está logado!')
+			return redirect(url_for('index'))
 
-#	return render_template('login.html', error=error)
+	return render_template('login.html', error=error)
 
 @app.route("/registrar", methods=['GET', 'POST'])
 def registrar():
 	if request.method == "POST":
 		r_nome = request.form.get("r_nome")
 		r_empresa = request.form.get("r_empresa")
+		r_cep = request.form.get("r_cep")
+		r_endereco = request.form.get("r_endereco")
 		r_telefone =  request.form.get("r_telefone")
 		r_email = request.form.get("r_email")
 		r_password = request.form.get("r_password")
 
-		if r_nome and r_empresa and r_telefone and r_email and r_password:
-			r = Registro(r_nome, r_empresa, r_telefone, r_email, r_password)
+		if r_nome and r_empresa and r_cep and r_endereco and r_telefone and r_email and r_password:
+			r = Registro(r_nome, r_empresa, r_cep, r_endereco, r_telefone, r_email, r_password)
 			db.session.add(r)
 			db.session.commit()
 
