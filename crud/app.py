@@ -23,12 +23,15 @@ class Pessoa(db.Model):
 	telefone = db.Column(db.String)
 	cpf = db.Column(db.String)
 	email = db.Column(db.String)
+	senha = db.Column(db.String)
 
-	def __init__(self, nome, telefone, cpf, email):
+
+	def __init__(self, nome, telefone, cpf, email, senha):
 		self.nome = nome
 		self.telefone = telefone
 		self.cpf = cpf
 		self.email = email
+		self.senha = senha
 
 class Registro(db.Model):
 	__tablename__ = 'registro'
@@ -38,6 +41,7 @@ class Registro(db.Model):
 	r_telefone = db.Column(db.String)
 	r_email = db.Column(db.String)
 	r_password = db.Column(db.String) 
+	r_senha = db.Column(db.String) 
 
 	def __init__(self, r_nome, r_empresa, r_telefone, r_email, r_password):
 		self.r_nome = r_nome
@@ -87,7 +91,12 @@ def registro():
 
 @app.route("/telaPrincipal")
 def telaPrincipal():
-	return render_template('telaPrincipal.html')
+	try:
+		if session['logged_in'] == True:
+			return render_template('telaPrincipal.html')
+	except (KeyError):		
+		return redirect(url_for("login"))
+	
 
 @app.route("/cadastro", methods=['GET', 'POST'])
 def cadastro():
@@ -96,9 +105,10 @@ def cadastro():
 		telefone =  request.form.get("telefone")
 		cpf = request.form.get("cpf")
 		email = request.form.get("email")
+		senha = request.form.get("senha")
 
-		if nome and telefone and cpf and email:
-			p = Pessoa(nome, telefone, cpf, email)
+		if nome and telefone and cpf and email and senha:
+			p = Pessoa(nome, telefone, cpf, email, senha)
 			db.session.add(p)
 			db.session.commit()
 
@@ -166,21 +176,16 @@ def login():
 	error = None
 	if request.method == 'POST':
 
-		usuario = request.form["username"]
-		senha  = request.form["password"]
-
-		condicao = "nomeusuario"  + r_nome + "."
-	
-		for user in session.query(r_nome).\
-            filter(text(condicao)).\
-             order_by(text("id")).all():
-             (r_nome.senha)  == senha
+		femail = request.form["username"]
+		fsenha  = request.form["password"]
+		pessoa = Pessoa.query.filter_by(email=femail).first()
 
 
-	    if senhabd ==  senha:
-
+		if pessoa.senha !=  fsenha:
 		#if request.form["username"] != "admin" or request.form["password"] != "admin":
-			error = 'Login inválido. Por favor, tente novamente.'
+			error = 'Login invalido. Por favor, tente novamente.'
+			return redirect(url_for('login'))
+
 		else:
 			session['logged_in'] = True
 			flash('Você está logado!')
