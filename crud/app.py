@@ -1,6 +1,7 @@
 #coding:utf-8
 from flask import Flask, render_template, request, url_for, redirect, session, flash
 from flask.ext.sqlalchemy import SQLAlchemy
+import sys
 #from flask.ext.login import LoginManager
 #from flask.ext.openid import OpenID
 #from config import basedir
@@ -38,38 +39,21 @@ class Registro(db.Model):
 	_id = db.Column(db.Integer, primary_key = True, autoincrement = True)
 	r_nome = db.Column(db.String)
 	r_empresa = db.Column(db.String)
+	r_cep = db.Column(db.String)
+	r_endereco = db.Column(db.String)
 	r_telefone = db.Column(db.String)
 	r_email = db.Column(db.String)
 	r_password = db.Column(db.String) 
-	r_senha = db.Column(db.String) 
+	
 
-	def __init__(self, r_nome, r_empresa, r_telefone, r_email, r_password):
+	def __init__(self, r_nome, r_empresa, r_cep, r_endereco, r_telefone, r_email, r_password):
 		self.r_nome = r_nome
 		self.r_empresa = r_empresa
+		self.r_cep = r_cep
+		self.r_endereco = r_endereco
 		self.r_telefone = r_telefone
 		self.r_email = r_email
 		self.r_password = r_password
-
-	#@property
-	#def is_authenticated(self):
-	    #return True
-	#@property
-	#def is_active(self):
-	    #return True
-	#@property
-	#def is_anonymous(self):
-	    #return False
-	#def get_id(self):
-		#try:
-			#return unicode(self.id)
-		#except NameError:
-			#return str(self.id)
-
-	#def __repr__(self):
-		#return '<Registro %r>' % (self.r_nome)
-	
-	
-	
 
 db.create_all()
 
@@ -95,7 +79,7 @@ def telaPrincipal():
 		if session['logged_in'] == True:
 			return render_template('telaPrincipal.html')
 	except (KeyError):		
-		return redirect(url_for("login"))
+		return redirect(url_for("home"))
 	
 
 @app.route("/cadastro", methods=['GET', 'POST'])
@@ -155,43 +139,30 @@ def atualizar(id):
 	return render_template("atualizar.html", pessoa=pessoa)
 
 
-#@app.route("/login/<int:id>", methods=['GET', 'POST'])
-#def login():
-	#error = None
-	#registro = Registro.query.filter_by(_id=id).first()
-
-	#if request.method == 'POST':
-
-		#if request.form.username != r_nome or request.form.password != r_password:
-			#error = 'Login Inválido. Digite novamente ou registre-se'
-			
-		#else:
-			#session['logged_in'] = True
-			#return redirect(url_for('index'))
-
-	#return render_template('login.html', error=error)
-
 @app.route("/login", methods=['GET', 'POST'])
 def login():
 	error = None
 	if request.method == 'POST':
 
 		femail = request.form["username"]
+		print(femail)
 		fsenha  = request.form["password"]
-		pessoa = Pessoa.query.filter_by(email=femail).first()
+		print(fsenha)
+		pessoa = Registro.query.filter_by(r_email=femail).first()
+		print (pessoa)
 
 
-		if pessoa.senha !=  fsenha:
+		if pessoa.r_password !=  fsenha:
 		#if request.form["username"] != "admin" or request.form["password"] != "admin":
 			error = 'Login invalido. Por favor, tente novamente.'
-			return redirect(url_for('login'))
+			return redirect(url_for('home'))
 
 		else:
 			session['logged_in'] = True
 			flash('Você está logado!')
 			return redirect(url_for('index'))
 
-	return render_template('login.html', error=error)
+	return render_template('telaPrincipal.html', error=error)
 
 @app.route("/registrar", methods=['GET', 'POST'])
 def registrar():

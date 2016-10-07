@@ -19,18 +19,18 @@
 
   <div class="container">
   <h2 class="text-center">Área de Login</h2>
-  <form class="form-horizontal">
+  <form class="form-horizontal" action="login" method="POST">
     <div class="form-group">
 
-      <label class="control-label col-sm-4" for="email">Login:</label>
+      <label class="control-label col-sm-4" for="username">Login:</label>
       <div class="col-sm-4">
-        <input type="email" class="form-control" id="email" placeholder="Insira o Login">
+        <input type="email" class="form-control" name="username" id="username" placeholder="Insira o Login" value="{{ request.form.username }}">
       </div>
     </div>
     <div class="form-group pull-center">
-      <label class="control-label col-sm-4" for="pwd">Senha:</label>
+      <label class="control-label col-sm-4" for="password">Senha:</label>
       <div class="col-sm-4">
-        <input type="password" class="form-control" id="pwd" placeholder="Insira a Senha">
+        <input type="password" class="form-control" name="password" id="password" placeholder="Insira a Senha" value=" {{ request.form.password }}">
       </div>
     </div>
     <div class="form-group">
