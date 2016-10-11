@@ -149,7 +149,8 @@ def login():
 		fsenha  = request.form["password"]
 		print(fsenha)
 		pessoa = Registro.query.filter_by(r_email=femail).first()
-		print (pessoa)
+		print(pessoa)
+		
 
 
 		if pessoa.r_password !=  fsenha:
@@ -160,7 +161,7 @@ def login():
 		else:
 			session['logged_in'] = True
 			flash('Você está logado!')
-			return redirect(url_for('index'))
+			return redirect(url_for('telaPrincipal'))
 
 	return render_template('telaPrincipal.html', error=error)
 

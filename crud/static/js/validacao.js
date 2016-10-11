@@ -21,9 +21,6 @@ if(tipo === "1"){
 		
 }
 
-
-
-
 if(erro==true){
 	alert("Preencha os campos destacados");
 }
