@@ -1,17 +1,19 @@
 function validar_ideia(){
 var area = document.getElementById("area").value;
-var ideia = document.getElementById("ideia").value;
+var ideia_para = document.getElementById("ideia_para").value;
 var tipo = document.getElementById("tipo").value;
+var ideia = document.getElementById("ideia").value;
+
 var erro = false;
 if(area === "1"){
 	document.getElementById("area").style.boxShadow="1px 1px 1px 1px #ff4040";
 	document.getElementById("area").style.color="#ff4040";
 	erro=true;
 }
-if(ideia === "1"){
+if(ideia_para === "1"){
 		
-		document.getElementById("ideia").style.color="#ff4040";
-		document.getElementById("ideia").style.boxShadow="1px 1px 1px 1px #ff4040";
+		document.getElementById("ideia_para").style.color="#ff4040";
+		document.getElementById("ideia_para").style.boxShadow="1px 1px 1px 1px #ff4040";
 		erro=true;
 }
 if(tipo === "1"){
@@ -19,6 +21,11 @@ if(tipo === "1"){
 	document.getElementById("tipo").style.color="#ff4040";
 	erro=true;
 		
+}
+if(ideia === ""){
+	document.getElementById("ideia").style.boxShadow="1px 1px 1px 1px #ff4040";
+	document.getElementById("ideia").style.color="#ff4040";
+	erro=true;
 }
 
 if(erro==true){

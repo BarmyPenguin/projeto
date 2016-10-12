@@ -183,13 +183,15 @@ def registrar():
 
 	return redirect(url_for("home"))
 
+#@app.route("/telaPrincipal")
 
 
-#@app.route("/sair")
-#def sair():
-#	session.pop('logged_in', None)
-#	flash('Você está deslogado!')
-#	return redirect(url_for('home'))
+
+@app.route("/sair/<int:id>", methods=['GET', 'POST'])
+def sair(id):
+	session.pop('logged_in', None)
+	flash('Você está deslogado!')
+	return redirect(url_for('home'))
 
 
 if __name__ == '__main__':
