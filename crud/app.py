@@ -107,7 +107,7 @@ def telaPrincipal():
 			db.session.add(i)
 			db.session.commit()
 
-	return redirect(url_for("home"))
+	return redirect(url_for("index"))
 	
 
 @app.route("/cadastro", methods=['GET', 'POST'])
@@ -182,7 +182,6 @@ def login():
 
 
 		if pessoa.r_password !=  fsenha:
-		#if request.form["username"] != "admin" or request.form["password"] != "admin":
 			error = 'Login invalido. Por favor, tente novamente.'
 			return redirect(url_for('home'))
 
