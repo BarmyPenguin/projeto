@@ -55,6 +55,20 @@ class Registro(db.Model):
 		self.r_email = r_email
 		self.r_password = r_password
 
+class Idea(db.Model):
+	__tablename__='ideia'
+	_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+	area = db.Column(db.String)
+	ideia_para = db.Column(db.String)
+	tipo = db.Column(db.String)
+	idea = db.Column(db.String)
+	
+	def __init__(self, area, ideia_para, tipo, idea):
+		self.area = area
+		self.ideia_para = ideia_para
+		self.tipo = tipo
+		self.idea = idea
+
 db.create_all()
 
 @app.route("/home")
@@ -80,6 +94,20 @@ def telaPrincipal():
 			return render_template('telaPrincipal.html')
 	except (KeyError):		
 		return redirect(url_for("home"))
+
+	if request.method == "POST":
+		area = request.form.get("area")
+		ideia_para =  request.form.get("ideia_para")
+		tipo = request.form.get("tipo")
+		ideia = request.form.get("idea")
+		senha = request.form.get("senha")
+
+		if area and ideia_para and tipo and ideia:
+			i = Idea(area, ideia_para, tipo, area)
+			db.session.add(i)
+			db.session.commit()
+
+	return redirect(url_for("home"))
 	
 
 @app.route("/cadastro", methods=['GET', 'POST'])
@@ -181,11 +209,7 @@ def registrar():
 			db.session.add(r)
 			db.session.commit()
 
-	return redirect(url_for("home"))
-
-#@app.route("/telaPrincipal")
-
-
+	return redirect(url_for('home'))
 
 @app.route("/sair/<int:id>", methods=['GET', 'POST'])
 def sair(id):

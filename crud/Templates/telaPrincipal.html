@@ -1,5 +1,3 @@
-Bem vindo ao sistema de ideias da Consulere
-abaixo cadastre a sua ideia de inovação -->
 <!DOCTYPE html>
 <hmtl>
 
@@ -15,15 +13,15 @@ abaixo cadastre a sua ideia de inovação -->
 
 	<body>
 		<div class="container">
-		<a href="/sair/{{ registro._id }}">Sair
 		
-<form class="form-horizontal">
+		
+<form class="form-horizontal" action="{{ url_for('telaPrincipal')}}">
 <fieldset>
 
 <legend>Registre sua Ideia</legend>
 
 <div class="form-group">
-  <label class="col-md-2 control-label" for="area">Area:</label>
+  <label class="col-md-2 control-label" for="area">Sua Area:</label>
   <div class="col-md-4">
     <select id="area" name="area" class="form-control" onclick="mudarcor('area')">
       <option value="1">Selecione..</option>
@@ -62,7 +60,7 @@ abaixo cadastre a sua ideia de inovação -->
 <div class="form-group">
   <label class="col-md-2 control-label" for="ideia">Ideia:</label>
   <div class="col-md-4">                     
-    <textarea class="form-control" id="ideia" name="ideia" placeholder="Digite sua Ideia..." rows="4"></textarea>
+    <textarea class="form-control" id="ideia" name="ideia" placeholder="Digite sua Ideia..." rows="4" onclick="mudarcor('ideia')"></textarea>
   </div>
 </div><br><br>
 	<div class="form-group">
