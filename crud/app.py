@@ -59,13 +59,13 @@ class Ideia(db.Model):
 	__tablename__='ideia'
 	_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 	area = db.Column(db.String)
-	ideiaPara = db.Column(db.String)
+	ideiapara = db.Column(db.String)
 	tipo = db.Column(db.String)
 	ideia = db.Column(db.String)
 	
-	def __init__(self, area, ideiaPara, tipo, ideia):
+	def __init__(self, area, ideiapara, tipo, ideia):
 		self.area = area
-		self.ideiaPara = ideiaPara
+		self.ideiapara = ideiapara
 		self.tipo = tipo
 		self.ideia = ideia
 
@@ -87,7 +87,7 @@ def cadastrar():
 def registro():
 	return render_template('registrar.html')
 
-@app.route("/telaPrincipal")
+@app.route("/telaPrincipal", methods=['GET', 'POST'])
 def telaPrincipal():
 	try:
 		if session['logged_in'] == True:
@@ -95,12 +95,14 @@ def telaPrincipal():
 	except (KeyError):		
 		return redirect(url_for("home"))
 
+@app.route("/cadastrarideia", methods=['GET', 'POST'])
+def cadastrarideia():
 	if request.method == "POST":
-		i = Ideia(request.form['area'], request.form['ideiaPara'], request.form['tipo'], request.form['ideia'])
+		i = Ideia(request.form['area'], request.form['ideiapara'], request.form['tipo'], request.form['ideia'])
 		db.session.add(i)
 		db.session.commit()
 
-	return redirect(url_for('index'))
+		return redirect(url_for('index'))
 	
 
 @app.route("/cadastro", methods=['GET', 'POST'])
@@ -131,31 +133,35 @@ def teste():
 
 @app.route("/excluir/<int:id>")
 def excluir(id):
-	pessoa = Pessoa.query.filter_by(_id=id).first()
+	pessoa = Registro.query.filter_by(_id=id).first()
 	db.session.delete(pessoa)
 	db.session.commit()
-	pessoas = Pessoa.query.all()
-	return render_template("lista.html", pessoas=pessoas)
+	pessoas = Registro.query.all()
+	return render_template("teste.html", pessoas=pessoas)
 
 @app.route("/atualizar/<int:id>", methods=['GET', 'POST'])
 def atualizar(id):
-	pessoa = Pessoa.query.filter_by(_id=id).first()
+	pessoa = Registro.query.filter_by(_id=id).first()
 	
 	if request.method == "POST":
 		nome = request.form.get("nome")
+		empresa = request.form.get("empresa")
+		cep = request.form.get("cep")
+		endereco = request.form.get("endereco")
 		telefone = request.form.get("telefone")
-		cpf = request.form.get("cpf")
 		email = request.form.get("email")
 
-		if nome and telefone and cpf and email:
+		if nome and empresa and cep and endereco and telefone and email:
 			pessoa.nome = nome
+			pessoa.empresa = empresa
+			pessoa.cep = cep
+			pessoa.endereco = endereco
 			pessoa.telefone = telefone
-			pessoa.cpf = cpf
 			pessoa.email = email
 
 			db.session.commit()
 
-			return redirect(url_for("lista"))
+			return redirect(url_for("teste"))
 
 	return render_template("atualizar.html", pessoa=pessoa)
 

@@ -17,7 +17,7 @@
 		<div class="container">
 		
 		
-<form class="form-horizontal" action="{{ url_for('telaPrincipal')}}" method="POST">
+<form class="form-horizontal" action="{{ url_for('cadastrarideia')}}" method="POST" id="telaPrincipal">
 <fieldset>
 
 <legend>Registre sua Ideia</legend>
@@ -41,9 +41,9 @@
 </div><br>
 
 <div class="form-group">
-  <label class="col-md-2 control-label" for="ideia_para">Ideia Para:</label>
+  <label class="col-md-2 control-label" for="ideiapara">Ideia Para:</label>
   <div class="col-md-4">
-    <select id="ideia_para" name="ideiaPara" class="form-control" onclick="mudarcor('ideia_para')">
+    <select id="ideiapara" name="ideiapara" class="form-control" onclick="mudarcor('ideiapara')">
       <option value="1">Selecione..</option>
       <option value="2">Acabamento</option>
       <option value="3">Administração</option>
