@@ -35,39 +35,39 @@ class Pessoa(db.Model):
 		self.senha = senha
 
 class Registro(db.Model):
-	__tablename__ = 'registro'
+	__tablename__ ='registro'
 	_id = db.Column(db.Integer, primary_key = True, autoincrement = True)
-	r_nome = db.Column(db.String)
-	r_empresa = db.Column(db.String)
-	r_cep = db.Column(db.String)
-	r_endereco = db.Column(db.String)
-	r_telefone = db.Column(db.String)
-	r_email = db.Column(db.String)
-	r_password = db.Column(db.String) 
+	nome = db.Column(db.String)
+	empresa = db.Column(db.String)
+	cep = db.Column(db.String)
+	endereco = db.Column(db.String)
+	telefone = db.Column(db.String)
+	email = db.Column(db.String)
+	password = db.Column(db.String) 
 	
 
-	def __init__(self, r_nome, r_empresa, r_cep, r_endereco, r_telefone, r_email, r_password):
-		self.r_nome = r_nome
-		self.r_empresa = r_empresa
-		self.r_cep = r_cep
-		self.r_endereco = r_endereco
-		self.r_telefone = r_telefone
-		self.r_email = r_email
-		self.r_password = r_password
+	def __init__(self, nome, empresa, cep, endereco, telefone, email, password):
+		self.nome = nome
+		self.empresa = empresa
+		self.cep = cep
+		self.endereco = endereco
+		self.telefone = telefone
+		self.email = email
+		self.password = password
 
-class Idea(db.Model):
+class Ideia(db.Model):
 	__tablename__='ideia'
 	_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 	area = db.Column(db.String)
-	ideia_para = db.Column(db.String)
+	ideiaPara = db.Column(db.String)
 	tipo = db.Column(db.String)
-	idea = db.Column(db.String)
+	ideia = db.Column(db.String)
 	
-	def __init__(self, area, ideia_para, tipo, idea):
+	def __init__(self, area, ideiaPara, tipo, ideia):
 		self.area = area
-		self.ideia_para = ideia_para
+		self.ideiaPara = ideiaPara
 		self.tipo = tipo
-		self.idea = idea
+		self.ideia = ideia
 
 db.create_all()
 
@@ -96,18 +96,11 @@ def telaPrincipal():
 		return redirect(url_for("home"))
 
 	if request.method == "POST":
-		area = request.form.get("area")
-		ideia_para =  request.form.get("ideia_para")
-		tipo = request.form.get("tipo")
-		ideia = request.form.get("idea")
-		senha = request.form.get("senha")
+		i = Ideia(request.form['area'], request.form['ideiaPara'], request.form['tipo'], request.form['ideia'])
+		db.session.add(i)
+		db.session.commit()
 
-		if area and ideia_para and tipo and ideia:
-			i = Idea(area, ideia_para, tipo, area)
-			db.session.add(i)
-			db.session.commit()
-
-	return redirect(url_for("index"))
+	return redirect(url_for('index'))
 	
 
 @app.route("/cadastro", methods=['GET', 'POST'])
@@ -173,15 +166,11 @@ def login():
 	if request.method == 'POST':
 
 		femail = request.form["username"]
-		print(femail)
 		fsenha  = request.form["password"]
-		print(fsenha)
-		pessoa = Registro.query.filter_by(r_email=femail).first()
-		print(pessoa)
+		pessoa = Registro.query.filter_by(email=femail).first()
 		
 
-
-		if pessoa.r_password !=  fsenha:
+		if pessoa.password !=  fsenha:
 			error = 'Login invalido. Por favor, tente novamente.'
 			return redirect(url_for('home'))
 
@@ -195,18 +184,9 @@ def login():
 @app.route("/registrar", methods=['GET', 'POST'])
 def registrar():
 	if request.method == "POST":
-		r_nome = request.form.get("r_nome")
-		r_empresa = request.form.get("r_empresa")
-		r_cep = request.form.get("r_cep")
-		r_endereco = request.form.get("r_endereco")
-		r_telefone =  request.form.get("r_telefone")
-		r_email = request.form.get("r_email")
-		r_password = request.form.get("r_password")
-
-		if r_nome and r_empresa and r_cep and r_endereco and r_telefone and r_email and r_password:
-			r = Registro(r_nome, r_empresa, r_cep, r_endereco, r_telefone, r_email, r_password)
-			db.session.add(r)
-			db.session.commit()
+		reg = Registro(request.form['nome'], request.form['empresa'], request.form['cep'], request.form['endereco'], request.form['telefone'], request.form['email'], request.form['password'])
+		db.session.add(reg)
+		db.session.commit()
 
 	return redirect(url_for('home'))
 
