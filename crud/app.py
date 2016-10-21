@@ -58,17 +58,19 @@ class Registro(db.Model):
 class Ideia(db.Model):
 	__tablename__='ideia'
 	_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+	nomefun = db.Column(db.String)
 	area = db.Column(db.String)
 	ideiapara = db.Column(db.String)
 	tipo = db.Column(db.String)
 	ideia = db.Column(db.String)
-	
-	def __init__(self, area, ideiapara, tipo, ideia):
+		
+	def __init__(self, nomefun, area, ideiapara, tipo, ideia):
+		self.nomefun = nomefun
 		self.area = area
 		self.ideiapara = ideiapara
 		self.tipo = tipo
 		self.ideia = ideia
-
+		
 db.create_all()
 
 @app.route("/home")
@@ -98,7 +100,7 @@ def telaPrincipal():
 @app.route("/cadastrarideia", methods=['GET', 'POST'])
 def cadastrarideia():
 	if request.method == "POST":
-		i = Ideia(request.form['area'], request.form['ideiapara'], request.form['tipo'], request.form['ideia'])
+		i = Ideia(request.form['nomefun'], request.form['area'], request.form['ideiapara'], request.form['tipo'], request.form['ideia'])
 		db.session.add(i)
 		db.session.commit()
 
@@ -170,21 +172,25 @@ def atualizar(id):
 def login():
 	error = None
 	if request.method == 'POST':
+		try:
+			femail = request.form["username"]
+			fsenha  = request.form["password"]
+			pessoa = Registro.query.filter_by(email=femail).first()
+			
+			if pessoa.password !=  fsenha:
+				error = 'Login invalido. Por favor, tente novamente.'
+				return redirect(url_for('home'))
+			else:
+				session['logged_in'] = True
+				flash('Você está logado!')
+				return redirect(url_for('telaPrincipal'))
 
-		femail = request.form["username"]
-		fsenha  = request.form["password"]
-		pessoa = Registro.query.filter_by(email=femail).first()
-		
-
-		if pessoa.password !=  fsenha:
+		except:		
 			error = 'Login invalido. Por favor, tente novamente.'
-			return redirect(url_for('home'))
+			return render_template("home.html", erro=error)
 
-		else:
-			session['logged_in'] = True
-			flash('Você está logado!')
-			return redirect(url_for('telaPrincipal'))
-
+		
+		
 	return render_template('telaPrincipal.html', error=error)
 
 @app.route("/registrar", methods=['GET', 'POST'])
