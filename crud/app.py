@@ -218,8 +218,8 @@ def aluga():
 def faz():
 	person = 1
 	if request.method == "POST":
-		i = Registro(person, request.form['nome'], request.form['empresa'], request.form['cep'], request.form['endereco'], request.form['telefone'], request.form['email'], request.form['password'])
-		db.session.add(i)
+		teste = Registro(person, request.form['nome'], request.form['empresa'], request.form['cep'], request.form['endereco'], request.form['telefone'], request.form['email'], request.form['password'])
+		db.session.add(teste)
 		db.session.commit()
 
 		return redirect(url_for('index'))
