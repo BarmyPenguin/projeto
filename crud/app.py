@@ -37,6 +37,7 @@ class Pessoa(db.Model):
 class Registro(db.Model):
 	__tablename__ ='registro'
 	_id = db.Column(db.Integer, primary_key = True, autoincrement = True)
+	person = db.Column(db.String)
 	nome = db.Column(db.String)
 	empresa = db.Column(db.String)
 	cep = db.Column(db.String)
@@ -46,7 +47,8 @@ class Registro(db.Model):
 	password = db.Column(db.String) 
 	
 
-	def __init__(self, nome, empresa, cep, endereco, telefone, email, password):
+	def __init__(self, person, nome, empresa, cep, endereco, telefone, email, password):
+		self.person = person
 		self.nome = nome
 		self.empresa = empresa
 		self.cep = cep
@@ -195,11 +197,11 @@ def login():
 
 @app.route("/registrar", methods=['GET', 'POST'])
 def registrar():
+	person = 2
 	if request.method == "POST":
-		reg = Registro(request.form['nome'], request.form['empresa'], request.form['cep'], request.form['endereco'], request.form['telefone'], request.form['email'], request.form['password'])
+		reg = Registro(person, request.form['nome'], request.form['empresa'], request.form['cep'], request.form['endereco'], request.form['telefone'], request.form['email'], request.form['password'])
 		db.session.add(reg)
 		db.session.commit()
-
 	return redirect(url_for('home'))
 
 @app.route("/sair/<int:id>", methods=['GET', 'POST'])
@@ -208,6 +210,19 @@ def sair(id):
 	flash('Você está deslogado!')
 	return redirect(url_for('home'))
 
+@app.route("/aluga", methods=['GET', 'POST'])
+def aluga():
+	return render_template("aluga.html")
+
+@app.route("/faz", methods=['GET', 'POST'])
+def faz():
+	person = 1
+	if request.method == "POST":
+		i = Registro(person, request.form['nome'], request.form['empresa'], request.form['cep'], request.form['endereco'], request.form['telefone'], request.form['email'], request.form['password'])
+		db.session.add(i)
+		db.session.commit()
+
+		return redirect(url_for('index'))
 
 if __name__ == '__main__':
 	app.run(debug=True)

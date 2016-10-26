@@ -2,7 +2,7 @@
 <hmtl>
 
 	<head>
-		<title>Página de Login</title>
+		<title>Registro de Ideias</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="stylesheet" href="../static/css/estilo.css">
@@ -13,7 +13,7 @@
 		
 	</head>
 
-	<body>
+	<body id="font">
 		<div class="container">
 		
 		
@@ -23,9 +23,9 @@
 <legend>Registre sua Ideia</legend>
 <div class="form-group">
 
-      <label class="control-label col-sm-4" for="nomefun">Nome do Funcionário:</label>
+      <label class="control-label col-sm-2" for="nomefun">Nome do Funcionário:</label>
       <div class="col-sm-4">
-        <input type="email" class="form-control" name="nomefun" id="nomefun" placeholder="Insira seu nome">
+        <input id="nomefun" type="email" class="form-control" name="nomefun" placeholder="Insira seu nome" onclick="mudarcor('nomefun')">
       </div>
     </div>
 <div class="form-group">
@@ -73,6 +73,7 @@
       <option value="4">Redução de Custo</option>
       <option value="5">Segurança</option>
       <option value="6">Sustentabilidade</option>
+      <option value="7">Outros...</option>
     </select>
   </div>
 </div><br>

@@ -1,10 +1,16 @@
 function validar_ideia(){
+var nomefun = document.getElementById("nomefun").value;
 var area = document.getElementById("area").value;
 var ideiapara = document.getElementById("ideiapara").value;
 var tipo = document.getElementById("tipo").value;
 var ideia = document.getElementById("ideia").value;
-
 var erro = false;
+
+if(nomefun === ""){
+	document.getElementById("nomefun").style.boxShadow="1px 1px 1px 1px #ff4040";
+	document.getElementById("nomefun").style.color="#ff4040";
+	erro=true;
+}
 if(area === "1"){
 	document.getElementById("area").style.boxShadow="1px 1px 1px 1px #ff4040";
 	document.getElementById("area").style.color="#ff4040";
