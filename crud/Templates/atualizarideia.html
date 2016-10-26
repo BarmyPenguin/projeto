@@ -1,0 +1,39 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link href="static/css/bootstrap.min.css" rel="stylesheet">
+		<title>Editar Ideia</title>
+	</head>
+	<body>
+		<h1>Editar Ideia</h1>
+		<hr>
+		<form action="" method="POST">
+			<table>
+				<tr>
+					<td>Nome</td>
+					<td><input type="text" name="nomefun" value="{{ ide.nomefun }}"></td>
+				</tr>
+				<tr>
+					<td>Sua Area</td>
+					<td><input type="text" name="area" value="{{ ide.area }}"></td>
+				</tr>
+				<tr>
+					<td>Ideia Para</td>
+					<td><input type="text" name="ideiapara" value="{{ ide.ideiapara }}"></td>
+				</tr>
+				<tr>
+					<td>Tipo</td>
+					<td><input type="text" name="tipo" value="{{ ide.tipo }}"></td>
+				</tr>
+				<tr>
+					<td>Ideia</td>
+					<td><input type="text" name="ideia" value="{{ ide.ideia }}"></td>
+				</tr>
+				
+			</table><br>
+			<input type="submit" value="Editar Dados">
+			</form>
+			<a href="/home">Voltar</a>
+	</body>
+</html>
