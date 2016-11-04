@@ -37,18 +37,17 @@ class Pessoa(db.Model):
 class Registro(db.Model):
 	__tablename__ ='registro'
 	_id = db.Column(db.Integer, primary_key = True, autoincrement = True)
-	person = db.Column(db.String)
 	nome = db.Column(db.String)
 	empresa = db.Column(db.String)
 	cep = db.Column(db.String)
 	endereco = db.Column(db.String)
 	telefone = db.Column(db.String)
 	email = db.Column(db.String)
-	password = db.Column(db.String) 
+	password = db.Column(db.String)
+	person = db.Column(db.Integer) 
 	
 
-	def __init__(self, person, nome, empresa, cep, endereco, telefone, email, password):
-		self.person = person
+	def __init__(self, nome, empresa, cep, endereco, telefone, email, password, person):
 		self.nome = nome
 		self.empresa = empresa
 		self.cep = cep
@@ -56,6 +55,7 @@ class Registro(db.Model):
 		self.telefone = telefone
 		self.email = email
 		self.password = password
+		self.person = person
 
 class Ideia(db.Model):
 	__tablename__='ideia'
@@ -89,7 +89,15 @@ def cadastrar():
 
 @app.route("/registro")
 def registro():
-	return render_template('registrar.html')
+	return render_template('registro.html')
+
+@app.route("/telaAdm", methods=['GET', 'POST'])
+def telaAdm():
+	try:
+		if session['logged_in'] == True:
+			return render_template('telaAdm.html')
+	except (KeyError):		
+		return redirect(url_for("home"))
 
 @app.route("/telaPrincipal", methods=['GET', 'POST'])
 def telaPrincipal():
@@ -112,7 +120,6 @@ def cadastrarideia():
 @app.route("/cadastro", methods=['GET', 'POST'])
 def cadastro():
 	if request.method == "POST":
-		person = 1
 		nome = request.form.get("nome")
 		empresa = request.form.get("empresa")
 		cep = request.form.get("cep")
@@ -120,9 +127,10 @@ def cadastro():
 		telefone =  request.form.get("telefone")		
 		email = request.form.get("email")
 		password = request.form.get("password")
+		person = 1
 
-		if person and nome and empresa and cep and endereco and telefone and email and password:
-			p = Registro(person, nome, empresa, cep, endereco, telefone, email, password)
+		if nome and empresa and cep and endereco and telefone and email and password and person:
+			p = Registro(nome, empresa, cep, endereco, telefone, email, password, person)
 			db.session.add(p)
 			db.session.commit()
 
@@ -209,7 +217,6 @@ def atualizar(id):
 
 	return render_template("atualizar.html", pessoa=pessoa)
 
-
 @app.route("/login", methods=['GET', 'POST'])
 def login():
 	error = None
@@ -219,12 +226,22 @@ def login():
 			fsenha  = request.form["password"]
 			pessoa = Registro.query.filter_by(email=femail).first()
 			
+			
 			if pessoa.password !=  fsenha:
 				error = 'Login invalido. Por favor, tente novamente.'
-				return redirect(url_for('home'))
-			else:
+				return render_template("home.html", erro=error)
+			
+			elif pessoa.person == 1:
+				#pessoa.authenticated = True
 				session['logged_in'] = True
 				flash('Você está logado!')
+				#login_user(pessoa, remember=True)
+				return redirect(url_for('telaAdm'))
+			else:
+				#pessoa.authenticated = True
+				session['logged_in'] = True
+				flash('Você está logado!')
+				#login_user(pessoa, remember=True)
 				return redirect(url_for('telaPrincipal'))
 
 		except:		
@@ -237,19 +254,34 @@ def login():
 
 @app.route("/registrar", methods=['GET', 'POST'])
 def registrar():
-	person = 2
 	if request.method == "POST":
-		reg = Registro(person, request.form['nome'], request.form['empresa'], request.form['cep'], request.form['endereco'], request.form['telefone'], request.form['email'], request.form['password'])
-		db.session.add(reg)
-		db.session.commit()
+		nome = request.form.get("nome")
+		empresa = request.form.get("empresa")
+		cep = request.form.get("cep")
+		endereco = request.form.get("endereco")
+		telefone =  request.form.get("telefone")		
+		email = request.form.get("email")
+		password = request.form.get("password")
+		person = 2
+
+		if nome and empresa and cep and endereco and telefone and email and password and person:
+			p = Registro(nome, empresa, cep, endereco, telefone, email, password, person)
+			db.session.add(p)
+			db.session.commit()
+		
 	return redirect(url_for('home'))
 
 @app.route("/sair/<int:id>", methods=['GET', 'POST'])
 def sair(id):
+	#user = current_user
+	#user.authenticated = False
+	#db.session.add(user)
+	#db.session.commit()
+	#logout_user()
 	session.pop('logged_in', None)
 	flash('Você está deslogado!')
 	return redirect(url_for('home'))
 
 if __name__ == '__main__':
-	#app.run(debug=True)
-	app.run(host="0.0.0.0", port=80)
+	app.run(debug=True)
+	#app.run(host="0.0.0.0", port=80)

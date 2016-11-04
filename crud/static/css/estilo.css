@@ -32,10 +32,9 @@ body#font{
 }
 body#cor{
 	font-family: Constantia;
-font-weight: lighter;
+	font-weight: lighter;
 	background-color: #135879 !important;
-	font-family: Constantia;
-font-weight: lighter;
+	
 }
 button{
 	margin-right: 100px;
@@ -51,8 +50,11 @@ label#cor{
 	color: white !important;
 	font-weight: lighter;
 }
-a:link{
-	color: gray;
-	font-size: 16px;
-
+div#errologin{
+	font-weight: bold;
+	color: #00CD66;
+	font-size: 15px;
+}
+div#cabeTabela{
+	position: relative !important;
 }
