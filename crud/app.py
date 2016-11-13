@@ -95,14 +95,6 @@ def cadastrar():
 def registro():
 	return render_template('registro.html')
 
-@app.route("/telaAdm", methods=['GET', 'POST'])
-def telaAdm():
-	try:
-		if session['logged_in'] == True:
-			return render_template('telaAdm.html')
-	except (KeyError):		
-		return redirect(url_for("home"))
-
 @app.route("/telaPrincipal", methods=['GET', 'POST'])
 def telaPrincipal():
 	try:
@@ -147,8 +139,12 @@ def lista():
 
 @app.route("/ideiasteste")
 def ideiasteste():
-	ideias = Ideia.query.all()
-	return render_template("ideiasteste.html", ideias=ideias)
+	try:
+		if session['logged_in'] == True:
+			ideias = Ideia.query.all()
+			return render_template("ideiasteste.html", ideias=ideias)
+	except (KeyError):		
+		return redirect(url_for("home"))
 
 @app.route("/teste")
 def teste():
@@ -180,15 +176,13 @@ def atualizarideia(id):
 		area = request.form.get("area")
 		ideapara = request.form.get("ideiapara")
 		tipo = request.form.get("tipo")
-		ideia = request.form.get("ideia")
-		
-		if nomefun and area and ideiapara and tipo and ideia:
+				
+		if nomefun and area and ideiapara and tipo:
 			ide.nomefun = nomefun
 			ide.area = area
 			ide.ideiapara = ideiapara
 			ide.tipo = tipo
-			ide.ideia = ideia
-			
+						
 			db.session.commit()
 
 			return redirect(url_for("ideiasteste"))
@@ -240,7 +234,7 @@ def login():
 				session['logged_in'] = True
 				flash('Você está logado!')
 				#login_user(pessoa, remember=True)
-				return redirect(url_for('telaAdm'))
+				return redirect(url_for('ideiasteste'))
 			else:
 				#pessoa.authenticated = True
 				session['logged_in'] = True
@@ -273,7 +267,7 @@ def registrar():
 			db.session.add(p)
 			db.session.commit()
 		
-	return redirect(url_for('home'))
+	return redirect(url_for('teste'))
 
 @app.route("/sair/<int:id>", methods=['GET', 'POST'])
 def sair(id):
