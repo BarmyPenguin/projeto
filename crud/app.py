@@ -144,7 +144,7 @@ def ideiasteste():
 
 @app.route("/teste")
 def teste():
-	registros = Registro(nome, empresa, telefone, email)
+	registros = Registro.query.all()
 	return render_template("teste.html", registros=registros)
 
 @app.route("/excluirideia/<int:id>")
