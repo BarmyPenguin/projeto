@@ -75,6 +75,10 @@ class Ideia(db.Model):
 		
 db.create_all()
 
+@app.route("/")
+def home_redirect():
+	return redirect("/home", code=302)
+
 @app.route("/home")
 def home():
 	return render_template('home.html')
