@@ -2,14 +2,8 @@
 from flask import Flask, render_template, request, url_for, redirect, session, flash
 from flask.ext.sqlalchemy import SQLAlchemy
 import sys
-#from flask.ext.login import LoginManager
-#from flask.ext.openid import OpenID
-#from config import basedir
-#import os
 
-#lm = LoginManager()
-#lm.init_app(app)
-#oid = OpenID(app, os.path.join(basedir, 'tmp')) 
+import flask_login
 
 app = Flask(__name__)
 app.secret_key = "my precious"
@@ -17,22 +11,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 
 db = SQLAlchemy(app)
 
-class Pessoa(db.Model):
-	__tablename__='cliente'
-	_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-	nome = db.Column(db.String)
-	telefone = db.Column(db.String)
-	cpf = db.Column(db.String)
-	email = db.Column(db.String)
-	senha = db.Column(db.String)
-
-
-	def __init__(self, nome, telefone, cpf, email, senha):
-		self.nome = nome
-		self.telefone = telefone
-		self.cpf = cpf
-		self.email = email
-		self.senha = senha
+login_manager = flask_login.LoginManager()
+login_manager.init_app(app)
 
 class Registro(db.Model):
 	__tablename__ ='registro'
@@ -46,7 +26,6 @@ class Registro(db.Model):
 	password = db.Column(db.String)
 	person = db.Column(db.Integer) 
 	
-
 	def __init__(self, nome, empresa, cep, endereco, telefone, email, password, person):
 		self.nome = nome
 		self.empresa = empresa
@@ -65,15 +44,95 @@ class Ideia(db.Model):
 	ideiapara = db.Column(db.String)
 	tipo = db.Column(db.String)
 	ideia = db.Column(db.String)
+#	emailfunc = db.Column(db.String)
 		
+#	def __init__(self, nomefun, area, ideiapara, tipo, ideia, emailfunc):
 	def __init__(self, nomefun, area, ideiapara, tipo, ideia):
 		self.nomefun = nomefun
 		self.area = area
 		self.ideiapara = ideiapara
 		self.tipo = tipo
 		self.ideia = ideia
-		
+#		self.emailfunc = emailfunc
+
 db.create_all()
+
+class User(flask_login.UserMixin):
+    pass
+
+@login_manager.user_loader
+def user_loader(email):
+	users = Registro.query.all()
+
+	# pesquisar se id existe
+	for pessoa in users:
+		if pessoa.email == email:
+			user = User()
+			user.id = pessoa.email
+			user.pessoa = pessoa
+			return user
+
+	return
+
+# TODO: entender melhor quando eh chamado...
+@login_manager.request_loader
+def request_loader(request):
+	email = request.form.get('email')
+
+	users = Registro.query.all()
+
+	for pessoa in users:
+		if pessoa.email == email:
+			user = User()
+			user.id = pessoa.email
+			user.pessoa = pessoa
+			# DO NOT ever store passwords in plaintext and always compare password
+			# hashes using constant-time comparison!
+			user.is_authenticated = request.form['pw'] == user.pessoa.email
+			return user	
+	
+	return
+
+@login_manager.unauthorized_handler
+def unauthorized_handler():
+	return redirect(url_for("home", erro="Usuário não logado, favor realizar o login"))
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+	error = None
+	if request.method == 'GET':
+		return render_template("home.html", erro=error)
+	else:
+		femail = request.form['username']
+		fsenha = request.form['password']
+		pessoa = Registro.query.filter_by(email=femail).first()
+		
+		print("azj - usuario " + femail + " " + fsenha )
+		print("azj - banco " + pessoa.email + " " + pessoa.password )
+		
+		if pessoa.password == request.form['password']:
+			user = User()
+			user.id = femail
+			user.pessoa = pessoa
+			flask_login.login_user(user)
+			if user.pessoa.person == 2:
+				return redirect(url_for('telaPrincipal'))
+			elif user.pessoa.person == 1:
+				return redirect(url_for('ideiasteste'))
+
+	return 'Bad login'
+
+@app.route('/status')
+def status():
+	if flask_login.current_user.is_anonymous:
+		return 'Not logged'
+	else:
+		return 'Logged in as: ' + flask_login.current_user.pessoa.email + " " + str(flask_login.current_user.pessoa.person)
+	
+@app.route('/logout')
+def logout():
+    flask_login.logout_user()
+    return redirect("/home", code=302)
 
 @app.route("/")
 def home_redirect():
@@ -88,6 +147,7 @@ def index():
 	return render_template('index.html')
 
 @app.route("/cadastrar")
+@flask_login.login_required
 def cadastrar():
 	return render_template('cadastro.html')
 
@@ -96,23 +156,22 @@ def registro():
 	return render_template('registro.html')
 
 @app.route("/telaPrincipal", methods=['GET', 'POST'])
+@flask_login.login_required
 def telaPrincipal():
-	try:
-		if session['logged_in'] == True:
-			return render_template('telaPrincipal.html')
-	except (KeyError):		
-		return redirect(url_for("home"))
+	if session['logged_in'] == True:
+		return render_template('telaPrincipal.html')
 
 @app.route("/cadastrarideia", methods=['GET', 'POST'])
+@flask_login.login_required
 def cadastrarideia():
 	if request.method == "POST":
+#		i = Ideia(request.form['nomefun'], request.form['area'], request.form['ideiapara'], request.form['tipo'], request.form['ideia'], flask_login.current_user.pessoa.id)
 		i = Ideia(request.form['nomefun'], request.form['area'], request.form['ideiapara'], request.form['tipo'], request.form['ideia'])
 		db.session.add(i)
 		db.session.commit()
 
 		return redirect(url_for('index'))
 	
-
 @app.route("/cadastro", methods=['GET', 'POST'])
 def cadastro():
 	if request.method == "POST":
@@ -132,26 +191,21 @@ def cadastro():
 
 	return redirect(url_for("cadastrar"))
 
-@app.route("/lista")
-def lista():
-	pessoas = Pessoa.query.all()
-	return render_template("lista.html", pessoas=pessoas)
-
 @app.route("/ideiasteste")
+@flask_login.login_required
 def ideiasteste():
-	try:
-		if session['logged_in'] == True:
-			ideias = Ideia.query.all()
-			return render_template("ideiasteste.html", ideias=ideias)
-	except (KeyError):		
-		return redirect(url_for("home"))
+	if session['logged_in'] == True:
+		ideias = Ideia.query.all()
+		return render_template("ideiasteste.html", ideias=ideias)
 
 @app.route("/teste")
+@flask_login.login_required
 def teste():
 	registros = Registro.query.all()
-	return render_template("teste.html", registros=registros)
+	return render_template("teste.html", registros=registros, usuario=flask_login.current_user.pessoa.person )
 
 @app.route("/excluirideia/<int:id>")
+@flask_login.login_required
 def excluirideia(id):
 	ide = Ideia.query.filter_by(_id=id).first()
 	db.session.delete(ide)
@@ -160,6 +214,7 @@ def excluirideia(id):
 	return render_template("ideiasteste.html", idei=idei)
 
 @app.route("/excluir/<int:id>")
+@flask_login.login_required
 def excluir(id):
 	pessoa = Registro.query.filter_by(_id=id).first()
 	db.session.delete(pessoa)
@@ -168,6 +223,7 @@ def excluir(id):
 	return render_template("teste.html", pessoas=pessoas)
 
 @app.route("/atualizarideia/<int:id>", methods=['GET', 'POST'])
+@flask_login.login_required
 def atualizarideia(id):
 	ide = Ideia.query.filter_by(_id=id).first()
 	
@@ -190,6 +246,7 @@ def atualizarideia(id):
 	return render_template("atualizarideia.html", ide=ide)	
 
 @app.route("/atualizar/<int:id>", methods=['GET', 'POST'])
+@flask_login.login_required
 def atualizar(id):
 	pessoa = Registro.query.filter_by(_id=id).first()
 	
@@ -215,42 +272,8 @@ def atualizar(id):
 
 	return render_template("atualizar.html", pessoa=pessoa)
 
-@app.route("/login", methods=['GET', 'POST'])
-def login():
-	error = None
-	if request.method == 'POST':
-		try:
-			femail = request.form["username"]
-			fsenha  = request.form["password"]
-			pessoa = Registro.query.filter_by(email=femail).first()
-			
-			
-			if pessoa.password !=  fsenha:
-				error = 'Login invalido. Por favor, tente novamente.'
-				return render_template("home.html", erro=error)
-			
-			elif pessoa.person == 1:
-				#pessoa.authenticated = True
-				session['logged_in'] = True
-				flash('Você está logado!')
-				#login_user(pessoa, remember=True)
-				return redirect(url_for('ideiasteste'))
-			else:
-				#pessoa.authenticated = True
-				session['logged_in'] = True
-				flash('Você está logado!')
-				#login_user(pessoa, remember=True)
-				return redirect(url_for('telaPrincipal'))
-
-		except:		
-			error = 'Login invalido. Por favor, tente novamente.'
-			return render_template("home.html", erro=error)
-
-		
-		
-	return render_template('telaPrincipal.html', error=error)
-
 @app.route("/registrar", methods=['GET', 'POST'])
+@flask_login.login_required
 def registrar():
 	if request.method == "POST":
 		nome = request.form.get("nome")
@@ -268,17 +291,6 @@ def registrar():
 			db.session.commit()
 		
 	return redirect(url_for('teste'))
-
-@app.route("/sair/<int:id>", methods=['GET', 'POST'])
-def sair(id):
-	#user = current_user
-	#user.authenticated = False
-	#db.session.add(user)
-	#db.session.commit()
-	#logout_user()
-	session.pop('logged_in', None)
-	flash('Você está deslogado!')
-	return redirect(url_for('home'))
 
 if __name__ == '__main__':
 	app.run(debug=True)
