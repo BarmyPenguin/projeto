@@ -194,7 +194,7 @@ def cadastro():
 @flask_login.login_required
 def ideiasteste():
 	ideias = Ideia.query.all()
-	return render_template("ideiasteste.html", user=flask_login.current_user.pessoa, ideias=ideias)
+	return render_template("ideiasteste.html", ideias=ideias)
 
 @app.route("/teste")
 @flask_login.login_required
