@@ -44,16 +44,17 @@ class Ideia(db.Model):
 	ideiapara = db.Column(db.String)
 	tipo = db.Column(db.String)
 	ideia = db.Column(db.String)
-#	emailfunc = db.Column(db.String)
+	emailfunc = db.Column(db.String)
+#	emailfunc = db.Column(db.String, db.ForeignKey("Registro._id"))
 		
-#	def __init__(self, nomefun, area, ideiapara, tipo, ideia, emailfunc):
-	def __init__(self, nomefun, area, ideiapara, tipo, ideia):
+	def __init__(self, nomefun, area, ideiapara, tipo, ideia, emailfunc):
+#	def __init__(self, nomefun, area, ideiapara, tipo, ideia):
 		self.nomefun = nomefun
 		self.area = area
 		self.ideiapara = ideiapara
 		self.tipo = tipo
 		self.ideia = ideia
-#		self.emailfunc = emailfunc
+		self.emailfunc = emailfunc
 
 db.create_all()
 
@@ -147,7 +148,7 @@ def index():
 	return render_template('index.html')
 
 @app.route("/cadastrar")
-@flask_login.login_required
+#@flask_login.login_required
 def cadastrar():
 	return render_template('cadastro.html')
 
@@ -158,15 +159,14 @@ def registro():
 @app.route("/telaPrincipal", methods=['GET', 'POST'])
 @flask_login.login_required
 def telaPrincipal():
-	if session['logged_in'] == True:
-		return render_template('telaPrincipal.html')
+	return render_template('telaPrincipal.html')
 
 @app.route("/cadastrarideia", methods=['GET', 'POST'])
 @flask_login.login_required
 def cadastrarideia():
 	if request.method == "POST":
-#		i = Ideia(request.form['nomefun'], request.form['area'], request.form['ideiapara'], request.form['tipo'], request.form['ideia'], flask_login.current_user.pessoa.id)
-		i = Ideia(request.form['nomefun'], request.form['area'], request.form['ideiapara'], request.form['tipo'], request.form['ideia'])
+		i = Ideia(request.form['nomefun'], request.form['area'], request.form['ideiapara'], request.form['tipo'], request.form['ideia'], flask_login.current_user.pessoa.email)
+#		i = Ideia(request.form['nomefun'], request.form['area'], request.form['ideiapara'], request.form['tipo'], request.form['ideia'])
 		db.session.add(i)
 		db.session.commit()
 
@@ -194,9 +194,8 @@ def cadastro():
 @app.route("/ideiasteste")
 @flask_login.login_required
 def ideiasteste():
-	if session['logged_in'] == True:
-		ideias = Ideia.query.all()
-		return render_template("ideiasteste.html", ideias=ideias)
+	ideias = Ideia.query.all()
+	return render_template("ideiasteste.html", user=flask_login.current_user.pessoa, ideias=ideias)
 
 @app.route("/teste")
 @flask_login.login_required
