@@ -44,8 +44,7 @@ class Ideia(db.Model):
 	ideiapara = db.Column(db.String)
 	tipo = db.Column(db.String)
 	ideia = db.Column(db.String)
-	emailfunc = db.Column(db.String)
-#	emailfunc = db.Column(db.String, db.ForeignKey("Registro._id"))
+	emailfunc = db.Column(db.String, db.ForeignKey("registro.email"))
 		
 	def __init__(self, nomefun, area, ideiapara, tipo, ideia, emailfunc):
 #	def __init__(self, nomefun, area, ideiapara, tipo, ideia):
