@@ -95,21 +95,19 @@ def request_loader(request):
 
 @login_manager.unauthorized_handler
 def unauthorized_handler():
-	return redirect(url_for("home", erro="Usuário não logado, favor realizar o login"))
+	error = 'Login invalido. Por favor, tente novamente.'
+	return render_template("home.html", erro=error)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-	error = None
+	error = 'Login invalido. Por favor, tente novamente.'
 	if request.method == 'GET':
 		return render_template("home.html", erro=error)
 	else:
 		femail = request.form['username']
 		fsenha = request.form['password']
 		pessoa = Registro.query.filter_by(email=femail).first()
-		
-		print("azj - usuario " + femail + " " + fsenha )
-		print("azj - banco " + pessoa.email + " " + pessoa.password )
-		
+				
 		if pessoa.password == request.form['password']:
 			user = User()
 			user.id = femail
@@ -120,7 +118,7 @@ def login():
 			elif user.pessoa.person == 1:
 				return redirect(url_for('ideiasteste'))
 
-	return 'Bad login'
+	return 'Login invalido. Por favor, tente novamente.'
 
 @app.route('/status')
 def status():
@@ -197,7 +195,7 @@ def ideiasteste():
 	return render_template("ideiasteste.html", ideias=ideias)
 
 @app.route("/teste")
-@flask_login.login_required
+#@flask_login.login_required
 def teste():
 	registros = Registro.query.all()
 	return render_template("teste.html", registros=registros, usuario=flask_login.current_user.pessoa.person )
