@@ -104,21 +104,24 @@ def login():
 	if request.method == 'GET':
 		return render_template("home.html", erro=error)
 	else:
-		femail = request.form['username']
-		fsenha = request.form['password']
-		pessoa = Registro.query.filter_by(email=femail).first()
+		try:
+			femail = request.form['username']
+			fsenha = request.form['password']
+			pessoa = Registro.query.filter_by(email=femail).first()
 				
-		if pessoa.password == request.form['password']:
-			user = User()
-			user.id = femail
-			user.pessoa = pessoa
-			flask_login.login_user(user)
-			if user.pessoa.person == 2:
-				return redirect(url_for('telaPrincipal'))
-			elif user.pessoa.person == 1:
-				return redirect(url_for('ideiasteste'))
+			if pessoa.password == fsenha:
+				user = User()
+				user.id = femail
+				user.pessoa = pessoa
+				flask_login.login_user(user)
+				if user.pessoa.person == 2:
+					return redirect(url_for('telaPrincipal'))
+				elif user.pessoa.person == 1:
+					return redirect(url_for('ideiasteste'))
+		except:
+			return render_template("home.html", erro=error)
 
-	return 'Login invalido. Por favor, tente novamente.'
+	return render_template("home.html", erro=error)
 
 @app.route('/status')
 def status():
@@ -162,12 +165,21 @@ def telaPrincipal():
 @flask_login.login_required
 def cadastrarideia():
 	if request.method == "POST":
-		i = Ideia(request.form['nomefun'], request.form['area'], request.form['ideiapara'], request.form['tipo'], request.form['ideia'], flask_login.current_user.pessoa.email)
-#		i = Ideia(request.form['nomefun'], request.form['area'], request.form['ideiapara'], request.form['tipo'], request.form['ideia'])
-		db.session.add(i)
-		db.session.commit()
+		nomefun = request.form.get("nomefun")
+		area = request.form.get("area")
+		ideiapara = request.form.get("ideiapara")
+		tipo = request.form.get("tipo")
+		ideia = request.form.get("ideia")
+		emailfunc = flask_login.current_user.pessoa.email
 
-		return redirect(url_for('index'))
+		if nomefun and area and ideiapara and tipo and ideia  and emailfunc:
+			i = Ideia(nomefun, area, ideiapara, tipo, ideia, emailfunc)
+			db.session.add(i)
+			db.session.commit()
+
+#		i = Ideia(request.form['nomefun'], request.form['area'], request.form['ideiapara'], request.form['tipo'], request.form['ideia'], flask_login.current_user.pessoa.email)
+		
+	return redirect(url_for('index'))
 	
 @app.route("/cadastro", methods=['GET', 'POST'])
 def cadastro():
