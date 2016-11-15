@@ -95,32 +95,33 @@ def request_loader(request):
 
 @login_manager.unauthorized_handler
 def unauthorized_handler():
-	return redirect(url_for("home", erro="Usuário não logado, favor realizar o login"))
+	error = 'Login invalido. Por favor, tente novamente.'
+	return render_template("home.html", erro=error)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-	error = None
+	error = 'Login invalido. Por favor, tente novamente.'
 	if request.method == 'GET':
 		return render_template("home.html", erro=error)
 	else:
-		femail = request.form['username']
-		fsenha = request.form['password']
-		pessoa = Registro.query.filter_by(email=femail).first()
-		
-		print("azj - usuario " + femail + " " + fsenha )
-		print("azj - banco " + pessoa.email + " " + pessoa.password )
-		
-		if pessoa.password == request.form['password']:
-			user = User()
-			user.id = femail
-			user.pessoa = pessoa
-			flask_login.login_user(user)
-			if user.pessoa.person == 2:
-				return redirect(url_for('telaPrincipal'))
-			elif user.pessoa.person == 1:
-				return redirect(url_for('ideiasteste'))
+		try:
+			femail = request.form['username']
+			fsenha = request.form['password']
+			pessoa = Registro.query.filter_by(email=femail).first()
+				
+			if pessoa.password == fsenha:
+				user = User()
+				user.id = femail
+				user.pessoa = pessoa
+				flask_login.login_user(user)
+				if user.pessoa.person == 2:
+					return redirect(url_for('telaPrincipal'))
+				elif user.pessoa.person == 1:
+					return redirect(url_for('ideiasteste'))
+		except:
+			return render_template("home.html", erro=error)
 
-	return 'Bad login'
+	return render_template("home.html", erro=error)
 
 @app.route('/status')
 def status():
@@ -164,12 +165,21 @@ def telaPrincipal():
 @flask_login.login_required
 def cadastrarideia():
 	if request.method == "POST":
-		i = Ideia(request.form['nomefun'], request.form['area'], request.form['ideiapara'], request.form['tipo'], request.form['ideia'], flask_login.current_user.pessoa.email)
-#		i = Ideia(request.form['nomefun'], request.form['area'], request.form['ideiapara'], request.form['tipo'], request.form['ideia'])
-		db.session.add(i)
-		db.session.commit()
+		nomefun = request.form.get("nomefun")
+		area = request.form.get("area")
+		ideiapara = request.form.get("ideiapara")
+		tipo = request.form.get("tipo")
+		ideia = request.form.get("ideia")
+		emailfunc = flask_login.current_user.pessoa.email
 
-		return redirect(url_for('index'))
+		if nomefun and area and ideiapara and tipo and ideia  and emailfunc:
+			i = Ideia(nomefun, area, ideiapara, tipo, ideia, emailfunc)
+			db.session.add(i)
+			db.session.commit()
+
+#		i = Ideia(request.form['nomefun'], request.form['area'], request.form['ideiapara'], request.form['tipo'], request.form['ideia'], flask_login.current_user.pessoa.email)
+		
+	return redirect(url_for('index'))
 	
 @app.route("/cadastro", methods=['GET', 'POST'])
 def cadastro():
@@ -194,7 +204,7 @@ def cadastro():
 @flask_login.login_required
 def ideiasteste():
 	ideias = Ideia.query.all()
-	return render_template("ideiasteste.html", user=flask_login.current_user.pessoa, ideias=ideias)
+	return render_template("ideiasteste.html", ideias=ideias)
 
 @app.route("/teste")
 @flask_login.login_required
